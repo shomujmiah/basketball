@@ -25,6 +25,9 @@
       await OneSignal.init({
         appId: "a15432df-7474-45b4-bad6-c279a35d9a72",
         safari_web_id: "", 
+        // 👇 Added subfolder service worker configuration for your 'basketball' repo
+        serviceWorkerPath: "/basketball/OneSignalSDKWorker.js",
+        serviceWorkerParam: { scope: "/basketball/" },
         notifyButton: {
           enable: true,
         },
