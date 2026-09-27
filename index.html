@@ -25,15 +25,17 @@
       await OneSignal.init({
         appId: "a15432df-7474-45b4-bad6-c279a35d9a72",
         safari_web_id: "", 
-        // 👇 Added subfolder service worker configuration for your 'basketball' repo
         serviceWorkerPath: "/basketball/OneSignalSDKWorker.js",
         serviceWorkerParam: { scope: "/basketball/" },
         notifyButton: {
-          enable: true,
+          enable: true, // This enables the floating bell icon on your GitHub wrapper page!
+          size: 'medium',
+          theme: 'default',
+          position: 'bottom-right',
+          showCredit: false,
         },
       });
 
-      // Optional initial tag
       try {
         await OneSignal.User.addTag("role", "player");
       } catch (error) {
