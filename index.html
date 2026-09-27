@@ -23,22 +23,31 @@
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     window.OneSignalDeferred.push(async function(OneSignal) {
       await OneSignal.init({
-        appId: "a15432df-7474-45b4-bad6-c279a35d9a72", // Replace with your OneSignal App ID
-        safari_web_id: "", // Optional Safari web ID if applicable
+        appId: "a15432df-7474-45b4-bad6-c279a35d9a72",
+        safari_web_id: "", 
         notifyButton: {
           enable: true,
         },
       });
 
-      // Example: Automatically prompt for push notifications and assign tags
+      // Optional initial tag
       try {
-        await OneSignal.Slidedown.promptPush();
-        
-        // You can tag users dynamically (e.g., player name, role)
-        // This tag can be updated when a player logs in or is identified
         await OneSignal.User.addTag("role", "player");
       } catch (error) {
         console.error("OneSignal Initialization Error:", error);
+      }
+    });
+
+    // Listen for cross-origin prompt requests from the inner Apps Script iframe
+    window.addEventListener("message", async function(event) {
+      if (event.data === "request_onesignal_prompt") {
+        window.OneSignalDeferred.push(async function(OneSignal) {
+          try {
+            await OneSignal.Slidedown.promptPush();
+          } catch (err) {
+            console.error("OneSignal Prompt Error:", err);
+          }
+        });
       }
     });
   </script>
