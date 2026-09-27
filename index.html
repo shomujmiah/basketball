@@ -7,7 +7,7 @@
   
   <!-- PWA Manifest Link -->
   <link rel="manifest" href="manifest.json">
-  
+
   <!-- Apple Touch & Mobile Icons (for iOS home screen shortcuts) -->
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,6 +16,32 @@
 
   <!-- Standard Favicon -->
   <link rel="icon" type="image/png" href="icon-192.png">
+
+  <!-- OneSignal Web SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "YOUR_ONESIGNAL_APP_ID", // Replace with your OneSignal App ID
+        safari_web_id: "", // Optional Safari web ID if applicable
+        notifyButton: {
+          enable: true,
+        },
+      });
+
+      // Example: Automatically prompt for push notifications and assign tags
+      try {
+        await OneSignal.Slidedown.promptPush();
+        
+        // You can tag users dynamically (e.g., player name, role)
+        // This tag can be updated when a player logs in or is identified
+        await OneSignal.User.addTag("role", "player");
+      } catch (error) {
+        console.error("OneSignal Initialization Error:", error);
+      }
+    });
+  </script>
 
   <style>
     html, body {
@@ -35,7 +61,6 @@
   </style>
 </head>
 <body>
-  <!--<iframe src="https://script.google.com/macros/s/AKfycbxRvi5oZN0sNtl10-QiCkzibflupj887oYrNyK1ZoBFCqKbsNw_BtoRKpM78D5WG8pw2w/exec" allow="geolocation"></iframe>-->
-  <iframe src="https://script.google.com/macros/s/AKfycbyqnkVZsYRUu_eDnu2DENlkQyI-oog8ABbBYL7RqaeIkxt-hulJ39US_wEVdyV9uHwsTQ/exec" allow="geolocation"></iframe>
+  <iframe src="https://script.google.com/macros/s/AKfycbxRvI5oZN0sNt110-QickzibfjpJ887uYrNyK1ZoBFCqkbsNwu_BtoRkPM7805WGBpv2w/exec"></iframe>
 </body>
 </html>
