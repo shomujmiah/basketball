@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Basketball Championship</title>
+  
+  <!-- PWA Manifest Link -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Apple Touch & Mobile Icons -->
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Basketball Stats">
+  <link rel="icon" type="image/png" href="icon-192.png">
+
+  <!-- OneSignal Web SDK -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    window.OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "a15432df-7474-45b4-bad6-c279a35d9a72",
+        safari_web_id: "", 
+        serviceWorkerPath: "/basketball/OneSignalSDKWorker.js",
+        serviceWorkerParam: { scope: "/basketball/" },
+        notifyButton: {
+          enable: true,
+          size: 'medium',
+          theme: 'default',
+          position: 'bottom-right',
+          showCredit: false,
+        },
+      });
+
+      // Function to check and update subscription button visibility
+      const updateButtonVisibility = () => {
+        const btn = document.getElementById('mobile-sub-btn');
+        if (btn) {
+          const isSubscribed = OneSignal.User.PushSubscription.optedIn;
+          // Hide button if already subscribed, show if not
+          btn.style.display = isSubscribed ? 'none' : 'block';
+        }
+      };
+
+      // Run on load
+      updateButtonVisibility();
+
+      // Listen for subscription changes in real-time
+      OneSignal.User.PushSubscription.addEventListener("change", function(event) {
+        updateButtonVisibility();
+      });
+
+      try {
+        await OneSignal.User.addTag("role", "player");
+      } catch (error) {
+        console.error("OneSignal Initialization Error:", error);
+      }
+    });
+
+    // Function for manual prompt trigger
+    function forceMobileSubscribe() {
+      window.OneSignalDeferred.push(async function(OneSignal) {
+        try {
+          await OneSignal.Slidedown.promptPush();
+        } catch (err) {
+          console.error("Prompt Error:", err);
+        }
+      });
+    }
+
+    // Listen for cross-origin prompt requests from inner iframe
+    window.addEventListener("message", async function(event) {
+      if (event.data === "request_onesignal_prompt") {
+        forceMobileSubscribe();
+      }
+    });
+  </script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #fdfbf7;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+    /* Moved to Top-Right and hidden by default until subscription state checks */
+    #mobile-sub-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 99999;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-family: sans-serif;
+      font-size: 13px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      cursor: pointer;
+      display: none; 
+    }
+  </style>
+</head>
+<body>
+  <!-- Clean top-right notification button -->
+  <button id="mobile-sub-btn" onclick="forceMobileSubscribe()">🔔 Enable Notifications</button>
+
+  <iframe src="https://script.google.com/macros/s/AKfycbzB_2dFK28q4AM1Qc6I2ipcU-dvePkG_t8A9fiQlLOQACXmmGVkQyaC467vq8V5n65uwQ/exec"></iframe>
+</body>
+</html>
