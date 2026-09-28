@@ -34,6 +34,24 @@
         },
       });
 
+      // Function to check and update subscription button visibility
+      const updateButtonVisibility = () => {
+        const btn = document.getElementById('mobile-sub-btn');
+        if (btn) {
+          const isSubscribed = OneSignal.User.PushSubscription.optedIn;
+          // Hide button if already subscribed, show if not
+          btn.style.display = isSubscribed ? 'none' : 'block';
+        }
+      };
+
+      // Run on load
+      updateButtonVisibility();
+
+      // Listen for subscription changes in real-time
+      OneSignal.User.PushSubscription.addEventListener("change", function(event) {
+        updateButtonVisibility();
+      });
+
       try {
         await OneSignal.User.addTag("role", "player");
       } catch (error) {
@@ -41,18 +59,18 @@
       }
     });
 
-    // Function for mobile manual prompt trigger
+    // Function for manual prompt trigger
     function forceMobileSubscribe() {
       window.OneSignalDeferred.push(async function(OneSignal) {
         try {
           await OneSignal.Slidedown.promptPush();
         } catch (err) {
-          console.error("Mobile Prompt Error:", err);
+          console.error("Prompt Error:", err);
         }
       });
     }
 
-    // Listen for cross-origin prompt requests from inner iframe if needed
+    // Listen for cross-origin prompt requests from inner iframe
     window.addEventListener("message", async function(event) {
       if (event.data === "request_onesignal_prompt") {
         forceMobileSubscribe();
@@ -75,26 +93,28 @@
       border: none;
       display: block;
     }
-    /* Explicit Mobile-Friendly Subscribe Button */
+    /* Moved to Top-Right and hidden by default until subscription state checks */
     #mobile-sub-btn {
       position: fixed;
-      bottom: 20px;
-      left: 20px;
+      top: 15px;
+      right: 15px;
       z-index: 99999;
       background-color: #2563eb;
       color: white;
       border: none;
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-radius: 20px;
       font-weight: bold;
       font-family: sans-serif;
+      font-size: 13px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.2);
       cursor: pointer;
+      display: none; 
     }
   </style>
 </head>
 <body>
-  <!-- Persistent button for mobile users to tap easily -->
+  <!-- Clean top-right notification button -->
   <button id="mobile-sub-btn" onclick="forceMobileSubscribe()">🔔 Enable Notifications</button>
 
   <iframe src="https://script.google.com/macros/s/AKfycbyqnkVZsYRUu_eDnu2DENlkQyI-oog8ABbBYL7RqaeIkxt-hulJ39US_wEVdyV9uHwsTQ/exec"></iframe>
